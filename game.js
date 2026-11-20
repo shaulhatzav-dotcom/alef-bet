@@ -38,6 +38,23 @@ const WORLDS = [
       [0.31,0.64],   // in the tractor's dark grille
       [0.12,0.29],   // in the dovecote window, under the dove
     ] },
+  // 21/11: world 3 = winter (art/worlds/winter-v2, blue evening), letters כ–ס. The user: no Hanukkah, the game is for the whole year
+  // -> ל = לחם (not לביבה), ס = סנאי (not סביבון); the panorama gets bread and a squirrel instead of latkes and a dreidel
+  { id:'winter', img:'img/world-winter.jpg', ar:2128/912, ground:0.93, title:'אלף בית בחורף', intro:'intro_winter', finale:'finale_winter',
+    letters:[
+      { id:'kaf',    ch:'כ', color:'#e63946', wordPlain:'כובע'    },
+      { id:'lamed',  ch:'ל', color:'#f77f00', wordPlain:'לחם'     },
+      { id:'mem',    ch:'מ', color:'#2a9d8f', wordPlain:'מטריה'   },
+      { id:'nun',    ch:'נ', color:'#4361ee', wordPlain:'נר'      },
+      { id:'samekh', ch:'ס', color:'#9b5de5', wordPlain:'סנאי'    },
+    ],
+    spots:[
+      [0.89,0.44],   // on the snowman's red hat
+      [0.70,0.63],   // in the dark under the bread shelf
+      [0.50,0.60],   // on the bench under the umbrella
+      [0.30,0.67],   // in the stones under the candle lantern
+      [0.14,0.72],   // in the squirrel's tree stump
+    ] },
 ];
 let W = WORLDS[0], WORLD = W, LETTERS = W.letters, SCENES = W.spots.map(s=>({spot:s}));
 function setWorld(i){
@@ -83,7 +100,21 @@ const LINES = {
   q_het:    'אֵיפֹה הָאוֹת חֵית?',
   q_tet:    'אֵיפֹה הָאוֹת טֵית?',
   q_yod:    'אֵיפֹה הָאוֹת יוּד?',
+  // 21/11: kept the approved recording (a re-take with "אתם עוברים לשלב הבא" had errors); the ▶ to the next stage shows anyway
   finale_farm: 'הִצְלַחְתֶּם! וָו, זַיִן, חֵית, טֵית, יוּד! סַבְתָּא וְכָל הַחֲיוֹת בַּחַוָּה שְׂמֵחוֹת. כָּל הַכָּבוֹד!',
+  // world 3: winter
+  intro_winter: 'עֶרֶב טוֹב! שֶׁלֶג יוֹרֵד, וְשָׁאוּל עֲדַיִן מְחַפֵּשׂ אוֹתִיּוֹת. רוֹאִים מַשֶּׁהוּ נוֹצֵץ? לַחֲצוּ עָלָיו!',
+  l_kaf:    'זֹאת הָאוֹת כַּף! כּוֹ, כְּמוֹ כּוֹבַע!',
+  l_lamed:  'זֹאת הָאוֹת לָמֶד! לֶ, כְּמוֹ לֶחֶם!',
+  l_mem:    'זֹאת הָאוֹת מֵם! מִ, כְּמוֹ מִטְרִיָּה!',
+  l_nun:    'זֹאת הָאוֹת נוּן! נֵ, כְּמוֹ נֵר!',
+  l_samekh: 'זֹאת הָאוֹת סָמֶךְ! סְ, כְּמוֹ סְנַאִי!',
+  q_kaf:    'אֵיפֹה הָאוֹת כַּף?',
+  q_lamed:  'אֵיפֹה הָאוֹת לָמֶד?',
+  q_mem:    'אֵיפֹה הָאוֹת מֵם?',
+  q_nun:    'אֵיפֹה הָאוֹת נוּן?',
+  q_samekh: 'אֵיפֹה הָאוֹת סָמֶךְ?',
+  finale_winter: 'הִצְלַחְתֶּם! כַּף, לָמֶד, מֵם, נוּן, סָמֶךְ! אֲפִלּוּ אִישׁ הַשֶּׁלֶג שָׂמֵחַ. כָּל הַכָּבוֹד!',
 };
 
 const $ = s => document.querySelector(s);
