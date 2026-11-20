@@ -55,6 +55,21 @@ const WORLDS = [
       [0.30,0.67],   // in the stones under the candle lantern
       [0.14,0.72],   // in the squirrel's tree stump
     ] },
+  // 21/11: world 4 = picnic in the garden (art/worlds/picnic-v2, sunny midday, the user's pick), 4 letters ע–ק.
+  // Right to left the picture already has cake, butterfly on a sunflower, toy turtle by a sandbox, hedgehog by mushrooms.
+  { id:'picnic', img:'img/world-picnic.jpg', ar:2128/912, ground:0.93, title:'אלף בית בפיקניק', intro:'intro_picnic', finale:'finale_picnic',
+    letters:[
+      { id:'ayin',  ch:'ע', color:'#e63946', wordPlain:'עוגה'   },
+      { id:'pe',    ch:'פ', color:'#f77f00', wordPlain:'פרפר'   },
+      { id:'tsadi', ch:'צ', color:'#2a9d8f', wordPlain:'צב'     },
+      { id:'qof',   ch:'ק', color:'#9b5de5', wordPlain:'קיפוד'  },
+    ],
+    spots:[
+      [0.87,0.66],   // on the checked cloth under the cake plate
+      [0.64,0.66],   // in the flowers at the sunflower's foot (butterfly above)
+      [0.34,0.64],   // at the sandbox corner, by the toy turtle's cart (0.42 left the turtle off screen)
+      [0.10,0.68],   // by the hedgehog, under the mushrooms
+    ] },
 ];
 let W = WORLDS[0], WORLD = W, LETTERS = W.letters, SCENES = W.spots.map(s=>({spot:s}));
 function setWorld(i){
@@ -115,6 +130,18 @@ const LINES = {
   q_nun:    'אֵיפֹה הָאוֹת נוּן?',
   q_samekh: 'אֵיפֹה הָאוֹת סָמֶךְ?',
   finale_winter: 'הִצְלַחְתֶּם! כַּף, לָמֶד, מֵם, נוּן, סָמֶךְ! אֲפִלּוּ אִישׁ הַשֶּׁלֶג שָׂמֵחַ. כָּל הַכָּבוֹד!',
+  // 21/11 world 4, picnic
+  intro_picnic: 'צָהֳרַיִם טוֹבִים! הַיּוֹם יֵשׁ פִּיקְנִיק בַּגִּנָּה. רוֹאִים מַשֶּׁהוּ נוֹצֵץ? לַחֲצוּ עָלָיו!',
+  l_ayin:   'זֹאת הָאוֹת עַיִן! עוּ, כְּמוֹ עוּגָה!',
+  l_pe:     'זֹאת הָאוֹת פֵּא! פַּ, כְּמוֹ פַּרְפַּר!',
+  // 21/11 the user: the letter is "צדיק", not "צדי"
+  l_tsadi:  'זֹאת הָאוֹת צָדִיק! צָ, כְּמוֹ צָב!',
+  l_qof:    'זֹאת הָאוֹת קוּף! קִי, כְּמוֹ קִיפּוֹד!',
+  q_ayin:   'אֵיפֹה הָאוֹת עַיִן?',
+  q_pe:     'אֵיפֹה הָאוֹת פֵּא?',
+  q_tsadi:  'אֵיפֹה הָאוֹת צָדִיק?',
+  q_qof:    'אֵיפֹה הָאוֹת קוּף?',
+  finale_picnic: 'הִצְלַחְתֶּם! עַיִן, פֵּא, צָדִיק, קוּף! עַכְשָׁו אֶפְשָׁר לֶאֱכוֹל עוּגָה. כָּל הַכָּבוֹד!',
 };
 
 const $ = s => document.querySelector(s);
