@@ -122,32 +122,56 @@ const sceneEl = $('#scene'), shaulEl = $('#shaul');
 const state = { w:0, n:0, found:new Set(), x:0, target:null, busy:true, lastLine:null, idleTimer:null, sw:0, sh:0, top:0, camX:0, quiz:null, canGo:false };
 
 /* ---------------- voice ---------------- */
-const audioCache = {};
+/* 21/11 iPhone had no narration: Safari never preloads <audio> (so the old per-line cache stayed empty) and it lets an
+   audio element play only after a tap. Now ONE player is unlocked on the first tap and every line just swaps its src. */
+const audioOK = {};                       // key -> false when the mp3 is missing (then the browser's TTS speaks)
+const voice = new Audio(); voice.preload = 'auto'; voice.setAttribute('playsinline', '');
+let unlockState = 0, sayToken = 0;       // 0 = not yet, 1 = trying, 2 = the player is allowed to play
+function silentWav(){
+  const n = 800, b = new Uint8Array(44 + n), v = new DataView(b.buffer), s = (o, t)=>[...t].forEach((c, i)=>b[o+i]=c.charCodeAt(0));
+  s(0,'RIFF'); v.setUint32(4,36+n,true); s(8,'WAVEfmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,8000,true); v.setUint32(28,8000,true); v.setUint16(32,1,true); v.setUint16(34,8,true); s(36,'data'); v.setUint32(40,n,true);
+  b.fill(128, 44); return URL.createObjectURL(new Blob([b], {type:'audio/wav'}));
+}
+function unlockAudio(){
+  try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){}
+  if (unlockState || !voice.paused) return;            // never cut a line that is already playing
+  unlockState = 1; voice.src = silentWav();
+  voice.play().then(()=>{ unlockState = 2; }).catch(()=>{ unlockState = 0; });   // a tap that iOS doesn't count -> retry on the next one
+}
+['pointerdown','touchend','click'].forEach(ev=> window.addEventListener(ev, unlockAudio, {capture:true, passive:true}));
 let heVoice = null;
 function pickVoice(){ const v = window.speechSynthesis ? speechSynthesis.getVoices() : []; heVoice = v.find(x=>/^(he|iw)/i.test(x.lang)) || null; }
 if (window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 function stopVoice(){
-  Object.values(audioCache).forEach(a=>{ a.pause(); a.currentTime=0; a.onended=null; });
+  sayToken++; voice.onended = null; voice.pause();
   if (window.speechSynthesis) speechSynthesis.cancel();
 }
 function say(key){
-  stopVoice(); state.lastLine = key;
+  stopVoice(); state.lastLine = key; const my = sayToken;
   const text = LINES[key] || '';
   const fallbackMs = 900 + text.length*65;
   return new Promise(resolve=>{
     let doneOnce=false; const done=()=>{ if(!doneOnce){ doneOnce=true; resolve(); } };
-    const a = audioCache[key];
-    if (a){ a.currentTime=0; a.onended=done; a.play().catch(()=>setTimeout(done,fallbackMs)); setTimeout(done, (a.duration||10)*1000+800); return; }
-    if (window.speechSynthesis && heVoice){
-      const u = new SpeechSynthesisUtterance(text); u.voice=heVoice; u.lang=heVoice.lang; u.rate=.85; u.pitch=1.15;
-      u.onend=done; u.onerror=done; setTimeout(done, fallbackMs+2500);
-      speechSynthesis.speak(u); return;
-    }
-    setTimeout(done, fallbackMs);
+    const tts = ()=>{
+      if (my !== sayToken) return done();
+      if (window.speechSynthesis && heVoice){
+        const u = new SpeechSynthesisUtterance(text); u.voice=heVoice; u.lang=heVoice.lang; u.rate=.85; u.pitch=1.15;
+        u.onend=done; u.onerror=done; setTimeout(done, fallbackMs+2500);
+        speechSynthesis.speak(u); return;
+      }
+      setTimeout(done, fallbackMs);
+    };
+    if (audioOK[key] === false) return tts();
+    voice.onended = done;
+    voice.onloadedmetadata = ()=>{ if (my === sayToken && isFinite(voice.duration)) setTimeout(done, voice.duration*1000 + 800); };
+    voice.src = `audio/${key}.mp3`;
+    voice.play().catch(()=>{ if (my === sayToken) setTimeout(done, fallbackMs); });
+    setTimeout(done, 15000);              // never hang the game on a stuck file
   });
 }
-function loadAudio(){
-  Object.keys(LINES).forEach(k=>{ const a=new Audio(`audio/${k}.mp3`); a.preload='auto'; a.oncanplaythrough=()=>{ audioCache[k]=a; }; });
+function loadAudio(){                     // warm the HTTP cache (and learn which lines have no mp3)
+  Object.keys(LINES).forEach(k=> fetch(`audio/${k}.mp3`).then(r=>{ audioOK[k] = r.ok; return r.ok && r.blob(); }).catch(()=>{}));
 }
 
 /* small synthesized sounds */
