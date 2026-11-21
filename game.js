@@ -46,7 +46,7 @@ const WORLDS = [
       [0.15,0.72],   // at the bear's honey pot
       [0.15,0.40],   // at the foot of the mountain, in the dark trees
     ] },
-  { id:'farm', img:'img/world-farm.jpg', ar:2128/912, ground:0.93, title:'אלף בית בחווה', intro:'intro_farm', finale:'finale_farm', reward:'clips/reward-farm.mp4',
+  { id:'farm', img:'img/world-farm.jpg', ar:2128/912, ground:0.93, title:'אלף בית בחווה', intro:'intro_farm', finale:'finale_farm', reward:'clips/reward-farm.mp4', music:'music/farm-loop.mp3',
     letters:[
       { id:'vav',   ch:'ו', color:'#e63946', wordPlain:'ורד'      },
       { id:'zayin', ch:'ז', color:'#f77f00', wordPlain:'זחל'      },
@@ -63,7 +63,7 @@ const WORLDS = [
     ] },
   // 21/11: world 3 = winter (art/worlds/winter-v2, blue evening), letters כ–ס. The user: no Hanukkah, the game is for the whole year
   // -> ל = לחם (not לביבה), ס = סנאי (not סביבון); the panorama gets bread and a squirrel instead of latkes and a dreidel
-  { id:'winter', img:'img/world-winter.jpg', ar:2128/912, ground:0.93, title:'אלף בית בחורף', intro:'intro_winter', finale:'finale_winter', reward:'clips/reward-winter.mp4',
+  { id:'winter', img:'img/world-winter.jpg', ar:2128/912, ground:0.93, title:'אלף בית בחורף', intro:'intro_winter', finale:'finale_winter', reward:'clips/reward-winter.mp4', music:'music/winter-loop.mp3',
     letters:[
       { id:'kaf',    ch:'כ', color:'#e63946', wordPlain:'כובע'    },
       { id:'lamed',  ch:'ל', color:'#f77f00', wordPlain:'לחם'     },
@@ -80,7 +80,7 @@ const WORLDS = [
     ] },
   // 21/11: world 4 = picnic in the garden (art/worlds/picnic-v2, sunny midday, the user's pick), 4 letters ע–ק.
   // Right to left the picture already has cake, butterfly on a sunflower, toy turtle by a sandbox, hedgehog by mushrooms.
-  { id:'picnic', img:'img/world-picnic.jpg', ar:2128/912, ground:0.93, title:'אלף בית בפיקניק', intro:'intro_picnic', finale:'finale_picnic', reward:'clips/reward-picnic.mp4',
+  { id:'picnic', img:'img/world-picnic.jpg', ar:2128/912, ground:0.93, title:'אלף בית בפיקניק', intro:'intro_picnic', finale:'finale_picnic', reward:'clips/reward-picnic.mp4', music:'music/picnic-loop.mp3',
     letters:[
       { id:'ayin',  ch:'ע', color:'#e63946', wordPlain:'עוגה'   },
       { id:'pe',    ch:'פ', color:'#f77f00', wordPlain:'פרפר'   },
@@ -95,7 +95,7 @@ const WORLDS = [
     ] },
   // 21/11: world 5 = sky at dusk (art/worlds/sky-v1, the user's pick), the last letters ר ש ת. Ends the whole alef-bet.
   // Right to left: rocket on its wooden stand, the big setting sun, parrot on the tree branch.
-  { id:'sky', img:'img/world-sky.jpg', ar:2128/912, ground:0.90, title:'אלף בית בשמיים', intro:'intro_sky', finale:'finale_sky', reward:'clips/reward-sky.mp4',
+  { id:'sky', img:'img/world-sky.jpg', ar:2128/912, ground:0.90, title:'אלף בית בשמיים', intro:'intro_sky', finale:'finale_sky', reward:'clips/reward-sky.mp4', music:'music/sky-loop.mp3',
     letters:[
       { id:'resh', ch:'ר', color:'#e63946', wordPlain:'רקטה' },
       { id:'shin', ch:'ש', color:'#f77f00', wordPlain:'שמש'  },
@@ -325,7 +325,9 @@ const duck = on => ()=>{ speaking = on; musicApply(on ? .12 : .5); if (on) music
 voice.addEventListener('playing', duck(true)); voice.addEventListener('pause', duck(false)); voice.addEventListener('ended', duck(false));
 document.addEventListener('visibilitychange', ()=>{ if (!actx) return; if (document.hidden) actx.suspend(); else musicKick(); });
 setInterval(musicKick, 2000);
-WORLDS.forEach(w=>{ if (w.music) musicFetch(w.music).catch(()=>{}); });
+// 21/11: every world has its own loop now (~0.7 MB each), so only the first one is fetched up front; the next world's loop is
+// fetched while the child celebrates (see celebrate()).
+if (WORLDS[0].music) musicFetch(WORLDS[0].music).catch(()=>{});
 /* ---------------- scene geometry ---------------- */
 const vw=()=>window.innerWidth, vh=()=>window.innerHeight;
 function layout(){
@@ -529,6 +531,7 @@ function celebrate(){
   for(let i=0;i<24;i++) setTimeout(()=>{ if (ov.classList.contains('show')) soapBubble(box); }, i*250);
   rewardClip(ov);
   const next = WORLDS[state.w+1];
+  if (next && next.music) musicFetch(next.music).catch(()=>{});
   $('#nextWorldBtn').classList.toggle('show', !!next);
   if (next) $('#nextWorldBtn').style.backgroundImage = `url(${next.img})`;
   // the praise follows the finale, a different one in each world (the forest finale already says "עוברים לשלב הבא", so it gets "עליתם שלב").
