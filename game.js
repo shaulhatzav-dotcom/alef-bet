@@ -5,6 +5,29 @@
 */
 'use strict';
 
+// 21/11 the user: "נראה שבכלל יש שימוש במשחק" -> anonymous usage counter (GoatCounter: no cookies, no ids, totals only).
+// It runs ONLY on the public site (github.io) and only once GC_CODE is filled in; never on localhost, files or the claude.ai copy.
+// To leave your own visits out, open the site once with ?nocount=1 (remembered on that device).
+const GC_CODE = 'shaul-alefbet';   // the site code from goatcounter.com (the part before .goatcounter.com); empty = counting is off
+const countOn = (()=>{ try{
+  if (/[?&]nocount=1/.test(location.search)) localStorage.setItem('shaulNoCount','1');
+  return !!GC_CODE && /github\.io$/.test(location.hostname) && !localStorage.getItem('shaulNoCount');
+}catch(e){ return false; } })();
+if (countOn){
+  window.goatcounter = { no_onload: false, allow_local: false };
+  const s = document.createElement('script'); s.async = true; s.src = 'https://gc.zgo.at/count.js';
+  s.dataset.goatcounter = `https://${GC_CODE}.goatcounter.com/count`; document.head.appendChild(s);
+}
+const counted = new Set();
+function count(ev){   // each event at most once per page load: 'play', 'done-forest', 'done-farm', ...
+  if (!countOn || counted.has(ev)) return; counted.add(ev);
+  const send = (n)=>{ try{
+    if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: ev, title: ev, event: true });
+    else if (n > 0) setTimeout(()=>send(n-1), 1500);   // count.js is still loading
+  }catch(e){} };
+  send(4);
+}
+
 // worlds (stages), played in order. 20/11: world 2 = Grandma's farm (art/worlds/farm-v2, morning), letters ו–י
 const WORLDS = [
   { id:'forest', img:'img/world-forest.jpg', ar:2128/912, ground:0.93, title:'אלף בית ביער', intro:'intro', finale:'finale', reward:'clips/reward-forest.mp4', music:'music/forest-loop.mp3',
@@ -497,6 +520,7 @@ function rewardClip(ov){
   vid.onended=toCard; card.onpointerdown=toCard;
 }
 function celebrate(){
+  count('done-' + W.id);
   $('#quiz').classList.remove('show');
   const ov=$('#celebrate'); ov.classList.add('show');
   sfx.found(); setTimeout(sfx.yes,600);
@@ -549,6 +573,7 @@ function reset(){
 async function begin(w){
   if (typeof w === 'number' && w !== state.w){ setWorld(w); reset(); }
   $('#start').classList.remove('show');
+  count('play');
   try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){}
   musicStart();       // still inside the tap, so iPhone lets it play
   state.busy=false;   // kids tap right away; let them walk while Shaul talks
