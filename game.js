@@ -413,11 +413,9 @@ function celebrate(){
   $('#quiz').classList.remove('show');
   const ov=$('#celebrate'); ov.classList.add('show');
   sfx.found(); setTimeout(sfx.yes,600);
-  const colors=['#e63946','#f77f00','#ffd23f','#2a9d8f','#4361ee','#9b5de5'];
-  for(let i=0;i<90;i++){ const c=document.createElement('div'); c.className='confetti';
-    c.style.left=Math.random()*100+'%'; c.style.background=colors[i%colors.length];
-    c.style.animationDuration=(2.5+Math.random()*2.5)+'s'; c.style.animationDelay=(Math.random()*1.5)+'s'; ov.appendChild(c);
-    setTimeout(()=>c.remove(),7000); }
+  // 21/11 the user: realistic soap bubbles instead of confetti (tap one = it pops into droplets; no extra sound)
+  const box=$('#bubbles'); box.innerHTML='';
+  for(let i=0;i<24;i++) setTimeout(()=>{ if (ov.classList.contains('show')) soapBubble(box); }, i*250);
   const next = WORLDS[state.w+1];
   $('#nextWorldBtn').classList.toggle('show', !!next);
   if (next) $('#nextWorldBtn').style.backgroundImage = `url(${next.img})`;
@@ -427,6 +425,20 @@ function celebrate(){
   let praise = cycle[state.w % 3];
   if (!next && praise === 'praise_1') praise = cycle[(state.w - 1) % 3] === 'praise_3' ? 'praise_2' : 'praise_3';
   say(W.finale).then(()=>{ if (state.lastLine === W.finale && ov.classList.contains('show')) say(praise); });
+}
+function soapBubble(box){
+  const R=(a,b)=>a+Math.random()*(b-a), d=R(46,130), b=document.createElement('div');
+  b.className='sb'; b.style.width=b.style.height=d+'px'; b.style.setProperty('--d',d+'px'); b.style.left=R(0,88)+'%';
+  b.style.animationDuration=R(7,10)+'s, '+R(2.6,4)+'s';
+  b.innerHTML=`<div class="b" style="animation-delay:-${R(0,2).toFixed(2)}s"><div class="film2"></div><div class="film" style="--a0:${R(0,360)|0}deg;--sw:${R(5,9).toFixed(1)}s"></div><div class="hl1"></div><div class="hl2"></div></div>`;
+  b.addEventListener('pointerdown', e=>{ e.stopPropagation(); if (b.classList.contains('popping')) return; b.classList.add('popping');
+    const r=b.getBoundingClientRect(), o=box.getBoundingClientRect();
+    for(let i=0;i<8;i++){ const p=document.createElement('div'), a=i/8*Math.PI*2; p.className='sbDrop';
+      p.style.left=(r.left-o.left+r.width/2)+'px'; p.style.top=(r.top-o.top+r.height/2)+'px';
+      p.style.setProperty('--dx',Math.cos(a)*r.width*.6+'px'); p.style.setProperty('--dy',Math.sin(a)*r.width*.6+'px');
+      box.appendChild(p); setTimeout(()=>p.remove(),500); }
+    setTimeout(()=>b.remove(),140); });
+  box.appendChild(b); setTimeout(()=>b.remove(),11000);
 }
 
 /* ---------------- start / reset ---------------- */
@@ -442,7 +454,7 @@ function buildHud(){
 function reset(){
   stopVoice(); clearTimeout(state.idleTimer);
   state.found.clear(); state.target=null; state.quiz=null; state.busy=true;
-  document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('show'));
+  document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('show')); $('#bubbles').innerHTML='';
   buildHud(); loadScene(0); state.x = state.sw*0.93; face(-1); layout();
 }
 async function begin(w){
