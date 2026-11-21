@@ -117,6 +117,9 @@
   .ytBtn i::after{content:''; position:absolute; left:50%; top:50%; transform:translate(-35%,-50%); border-style:solid; border-width:.3em 0 .3em .5em;
     border-color:transparent transparent transparent #fff}
   #start .ytBtn{position:absolute; bottom:max(16px,env(safe-area-inset-bottom)); left:max(16px,env(safe-area-inset-left))}
+  /* 21/11 the user: copyright notice (free; LICENSE file in the repo says all rights reserved) */
+  .copyNote{position:absolute; top:max(8px,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); font-family:system-ui,sans-serif; font-size:min(1.9vh,12px,3vw);
+    color:rgba(255,255,255,.85); text-shadow:0 1px 3px rgba(0,0,0,.8); white-space:nowrap; pointer-events:none}
   /* 21/11 the user: a WhatsApp button so anyone can share the game (wa.me link, text + site URL set in game.js) */
   .ytBtn i.wa, .roundBtn i.wa{background:#25d366; border-radius:50%; width:1.25em; height:1.25em}
   .ytBtn i.wa::after, .roundBtn i.wa::after{content:'✆'; border:0; color:#fff; font-size:.85em; line-height:1; transform:translate(-50%,-52%); font-family:system-ui,sans-serif}
@@ -240,6 +243,7 @@
     <img class="shaulBig" src="img/shaul.png" alt="">
     <a class="ytBtn" href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener"><i></i>פרקים של שאול ביוטיוב</a>
     <a class="ytBtn waBtn waShare" target="_blank" rel="noopener"><i class="wa"></i>שתפו בוואטסאפ</a>
+    <div class="copyNote">© 2026 שאול הצב · כל הזכויות שמורות</div>
   </div>
 
   <div class="overlay" id="found">
