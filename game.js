@@ -533,6 +533,7 @@ function celebrate(){
   const next = WORLDS[state.w+1];
   if (next && next.music) musicFetch(next.music).catch(()=>{});
   $('#nextWorldBtn').classList.toggle('show', !!next);
+  $('#endHomeBtn').classList.toggle('show', !next);   // the last world: 🏠 back to the start screen instead of ▶
   if (next) $('#nextWorldBtn').style.backgroundImage = `url(${next.img})`;
   // the praise follows the finale, a different one in each world (the forest finale already says "עוברים לשלב הבא", so it gets "עליתם שלב").
   // "ממשיכים לשלב הבא" only where a next world exists.
@@ -592,6 +593,7 @@ $('#nextWorldBtn').addEventListener('pointerdown', async ()=>{
   setWorld(state.w+1); reset(); await wait(100); $('#fade').classList.remove('on'); begin();
 });
 $('#homeBtn').addEventListener('pointerdown', e=>{ e.stopPropagation(); reset(); musicStop(); $('#start').classList.add('show'); });
+$('#endHomeBtn').addEventListener('pointerdown', e=>{ e.stopPropagation(); reset(); musicStop(); $('#start').classList.add('show'); });
 $('#musicBtn').addEventListener('pointerdown', e=>{
   e.stopPropagation(); bgmOff = !bgmOff; $('#musicBtn').classList.toggle('off', bgmOff);
   try{ localStorage.setItem('shaulMusicOff', bgmOff ? '1' : '0'); }catch(err){}

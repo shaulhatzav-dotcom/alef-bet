@@ -112,6 +112,13 @@
   .celebBtns .playBtn{margin-top:0}
   #nextWorldBtn{display:none; width:min(26vh,170px,38vw)}
   #nextWorldBtn.show{display:block; animation:pulse 1.4s infinite}
+  #endHomeBtn{display:none} #endHomeBtn.show{display:block}
+  /* 21/11 the user: on a COMPUTER the two end-screen buttons sat in the middle, one under the other, touching. There (mouse + wide screen)
+     they go to the bottom corners: YouTube on the left, WhatsApp on the right. Phones and tablets keep the stacked layout. */
+  @media (orientation:landscape) and (hover:hover) and (pointer:fine){
+    #celebrate a.ytBtn{position:absolute; margin:0; font-size:min(4.6vh,22px); bottom:max(18px,env(safe-area-inset-bottom)); left:max(20px,env(safe-area-inset-left)); right:auto}
+    #celebrate a.ytBtn.waBtn{left:auto; right:max(20px,env(safe-area-inset-right))}
+  }
 
   /* link to the Shaul YouTube channel (20/11, top priority: the game funnels to the channel). Small on the start screen, big at the end */
   .ytBtn{display:inline-flex; align-items:center; gap:.5em; text-decoration:none; background:#fff; color:#2b2b2b; border-radius:999px;
@@ -277,9 +284,11 @@
     <div class="celebBtns">
       <button class="playBtn" id="againBtn" aria-label="שחק שוב">↻</button>
       <button class="worldBtn next" id="nextWorldBtn" aria-label="לשלב הבא"><i>▶</i></button>
+      <!-- 21/11 the user: after the LAST world there is no ▶, and ↻ only replays that world, so the end screen gets a way back to the start -->
+      <button class="playBtn" id="endHomeBtn" aria-label="חזרה להתחלה">🏠</button>
     </div>
     <a class="ytBtn" href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener"><i></i>עוד שאול הצב ביוטיוב</a>
     <a class="ytBtn waBtn waShare" target="_blank" rel="noopener"><i class="wa"></i>שתפו את המשחק בוואטסאפ</a>
   </div>
 </div>
-<script src="game.js?v=24"></script>
+<script src="game.js?v=25"></script>
