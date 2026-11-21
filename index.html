@@ -68,6 +68,10 @@
   #ytMini i{display:block; width:56%; height:40%; border-radius:22%/30%; background:#e62117; position:relative}
   #ytMini i::after{content:''; position:absolute; left:50%; top:50%; transform:translate(-35%,-50%); border-style:solid; border-width:.28em 0 .28em .46em; border-color:transparent transparent transparent #fff}
   #game:has(#start.show) #ytMini, #game:has(#celebrate.show) #ytMini{display:none}
+  /* 21/11 background music (forest only for now): 🎵 under 🔊 turns ONLY the music off/on */
+  #musicBtn{top:calc(max(10px,env(safe-area-inset-top)) + min(12vh,64px,12vw) + 12px); left:12px; z-index:45}
+  #musicBtn.off{opacity:.55; background:rgba(255,255,255,.92) linear-gradient(135deg,transparent 46%,#d33 46%,#d33 54%,transparent 54%)}
+  #game:has(#start.show) #musicBtn, #game:has(#celebrate.show) #musicBtn{display:none}
 
   /* ---------- overlays ---------- */
   .overlay{position:absolute; inset:0; z-index:40; display:none; align-items:center; justify-content:center; flex-direction:column}
@@ -231,6 +235,7 @@
 
   <div id="hud"></div>
   <button class="roundBtn" id="soundBtn" aria-label="שמע שוב">🔊</button>
+  <button class="roundBtn" id="musicBtn" aria-label="מוזיקה" hidden>🎵</button>
   <button class="roundBtn" id="homeBtn" aria-label="התחלה">🏠</button>
   <a class="roundBtn waShare" id="waMini" target="_blank" rel="noopener" aria-label="שתפו בוואטסאפ"><i class="wa"></i></a>
   <a class="roundBtn" id="ytMini"href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener" aria-label="שאול הצב ביוטיוב"><i></i></a>
@@ -277,4 +282,4 @@
     <a class="ytBtn waBtn waShare" target="_blank" rel="noopener"><i class="wa"></i>שתפו את המשחק בוואטסאפ</a>
   </div>
 </div>
-<script src="game.js?v=19"></script>
+<script src="game.js?v=20"></script>

@@ -7,7 +7,7 @@
 
 // worlds (stages), played in order. 20/11: world 2 = Grandma's farm (art/worlds/farm-v2, morning), letters ו–י
 const WORLDS = [
-  { id:'forest', img:'img/world-forest.jpg', ar:2128/912, ground:0.93, title:'אלף בית ביער', intro:'intro', finale:'finale', reward:'clips/reward-forest.mp4',
+  { id:'forest', img:'img/world-forest.jpg', ar:2128/912, ground:0.93, title:'אלף בית ביער', intro:'intro', finale:'finale', reward:'clips/reward-forest.mp4', music:'music/forest-loop.mp3',
     letters:[
       { id:'alef',  ch:'א', color:'#e63946', wordPlain:'ארנב' },
       { id:'bet',   ch:'ב', color:'#f77f00', wordPlain:'בלוט' },
@@ -240,6 +240,45 @@ function blip(freqs, dur=.12, type='sine', vol=.16){
 const sfx = { found:()=>blip([523,659,784,1047,1319],.14,'triangle'), rustle:()=>blip([300,420,360],.06,'triangle',.06),
               yes:()=>blip([659,784,1047],.15,'triangle'), no:()=>blip([330,262],.16,'sine',.08), step:()=>blip([200],.04,'sine',.025),
               whoosh:()=>blip([400,600,800,1000],.07,'sine',.05) };
+
+/* ---------------- background music ---------------- */
+/* 21/11 the user approved by ear: Suno "forest loop" version B, 4% of its level, and lower still (x0.35) while anyone
+   speaks. Through a Web Audio gain node, because iPhone ignores audio.volume. 🎵 turns only the music off (remembered). */
+const MUSIC_GAIN = 0.04, MUSIC_DUCK = 0.35;
+const bgm = new Audio(); bgm.loop = true; bgm.preload = 'none'; bgm.setAttribute('playsinline', '');
+let bgmGain = null, bgmOff = false, speaking = false;
+try{ bgmOff = localStorage.getItem('shaulMusicOff') === '1'; }catch(e){}
+const musicLevel = ()=> bgmOff ? 0 : MUSIC_GAIN * (speaking ? MUSIC_DUCK : 1);
+function musicApply(t=.3){
+  if (bgmGain){ bgmGain.gain.setTargetAtTime(musicLevel(), actx.currentTime, t); return; }
+  bgm.volume = Math.min(1, musicLevel());      // no Web Audio: plain volume (works on computers / Android)
+}
+function musicWire(){
+  if (bgmGain || !actx) return;
+  try{ bgmGain = actx.createGain(); bgmGain.gain.value = 0; actx.createMediaElementSource(bgm).connect(bgmGain).connect(actx.destination); }
+  catch(e){ bgmGain = null; }
+}
+function musicStart(){
+  const btn = $('#musicBtn'); btn.hidden = !W.music; btn.classList.toggle('off', bgmOff);
+  if (!W.music){ musicStop(); return; }
+  musicTok++;                                   // cancel a pending stop (again / next world)
+  try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){}
+  musicWire();
+  if (!bgm.src.endsWith(W.music)){ bgm.src = W.music; }
+  if (bgmGain) bgmGain.gain.setValueAtTime(0, actx.currentTime);
+  if (bgmOff) return;
+  bgm.play().catch(()=>{});
+  musicApply(1.2);                              // soft fade-in
+}
+let musicTok = 0;
+function musicStop(){
+  const my = ++musicTok;
+  if (bgmGain && actx) bgmGain.gain.setTargetAtTime(0, actx.currentTime, .15); else bgm.volume = 0;
+  setTimeout(()=>{ if (my === musicTok) bgm.pause(); }, 600);
+}
+const duck = on => ()=>{ speaking = on; musicApply(on ? .12 : .5); };
+voice.addEventListener('playing', duck(true)); voice.addEventListener('pause', duck(false)); voice.addEventListener('ended', duck(false));
+document.addEventListener('visibilitychange', ()=>{ if (document.hidden) bgm.pause(); else if (W.music && !bgmOff && !$('#start').classList.contains('show')) bgm.play().catch(()=>{}); });
 
 /* ---------------- scene geometry ---------------- */
 const vw=()=>window.innerWidth, vh=()=>window.innerHeight;
@@ -488,6 +527,7 @@ async function begin(w){
   if (typeof w === 'number' && w !== state.w){ setWorld(w); reset(); }
   $('#start').classList.remove('show');
   try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){}
+  musicStart();       // still inside the tap, so iPhone lets it play
   state.busy=false;   // kids tap right away; let them walk while Shaul talks
   await wait(500); await say(W.intro);
   if (!state.found.size && !spotOnScreen() && state.lastLine===W.intro) say('goFind');   // only if the kid hasn't walked there already
@@ -500,7 +540,12 @@ $('#nextWorldBtn').addEventListener('pointerdown', async ()=>{
   stopVoice(); sfx.whoosh(); $('#fade').classList.add('on'); await wait(600);
   setWorld(state.w+1); reset(); await wait(100); $('#fade').classList.remove('on'); begin();
 });
-$('#homeBtn').addEventListener('pointerdown', e=>{ e.stopPropagation(); reset(); $('#start').classList.add('show'); });
+$('#homeBtn').addEventListener('pointerdown', e=>{ e.stopPropagation(); reset(); musicStop(); $('#start').classList.add('show'); });
+$('#musicBtn').addEventListener('pointerdown', e=>{
+  e.stopPropagation(); bgmOff = !bgmOff; $('#musicBtn').classList.toggle('off', bgmOff);
+  try{ localStorage.setItem('shaulMusicOff', bgmOff ? '1' : '0'); }catch(err){}
+  if (bgmOff) musicStop(); else musicStart();
+});
 $('#soundBtn').addEventListener('pointerdown', e=>{ e.stopPropagation(); if(state.lastLine) say(state.lastLine); });
 window.addEventListener('resize', layout);
 
