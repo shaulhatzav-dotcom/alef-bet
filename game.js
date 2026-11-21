@@ -423,7 +423,8 @@ function rewardClip(ov){
   const toCard=()=>{ clearTimeout(state.clipTimer);
     if (!ov.classList.contains('vidFull')) return;
     ov.classList.remove('vidFull'); card.classList.remove('pop'); void card.offsetWidth; card.classList.add('pop'); };
-  if (matchMedia('(orientation:landscape)').matches){
+  // 21/11 the user: on a computer it must open full screen too, even in a tall window (e.g. a side panel) -> mouse = full screen
+  if (matchMedia('(orientation:landscape), (hover:hover) and (pointer:fine)').matches){
     ov.classList.add('vidFull');
     state.clipTimer=setTimeout(toCard, 8000);   // safety, in case "ended" never fires
   }
