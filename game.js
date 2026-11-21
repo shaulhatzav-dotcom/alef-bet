@@ -142,6 +142,10 @@ const LINES = {
   q_tsadi:  'אֵיפֹה הָאוֹת צָדִיק?',
   q_qof:    'אֵיפֹה הָאוֹת קוּף?',
   finale_picnic: 'הִצְלַחְתֶּם! עַיִן, פֵּא, צָדִיק, קוּף! עַכְשָׁו אֶפְשָׁר לֶאֱכוֹל עוּגָה. כָּל הַכָּבוֹד!',
+  // 21/11 the user: a praise at the end of every world (after the finale), a different one each time
+  praise_1: 'כָּל הַכָּבוֹד! אַתֶּם מַמְשִׁיכִים לַשָּׁלָב הַבָּא!',
+  praise_2: 'כָּל הַכָּבוֹד! עֲלִיתֶם שָׁלָב!',
+  praise_3: 'כָּל הַכָּבוֹד! אַתֶּם מִתְקַדְּמִים!',
 };
 
 const $ = s => document.querySelector(s);
@@ -395,7 +399,12 @@ function celebrate(){
   const next = WORLDS[state.w+1];
   $('#nextWorldBtn').classList.toggle('show', !!next);
   if (next) $('#nextWorldBtn').style.backgroundImage = `url(${next.img})`;
-  say(W.finale);
+  // the praise follows the finale, a different one in each world (the forest finale already says "עוברים לשלב הבא", so it gets "עליתם שלב").
+  // "ממשיכים לשלב הבא" only where a next world exists.
+  const cycle = ['praise_2','praise_1','praise_3'];
+  let praise = cycle[state.w % 3];
+  if (!next && praise === 'praise_1') praise = cycle[(state.w - 1) % 3] === 'praise_3' ? 'praise_2' : 'praise_3';
+  say(W.finale).then(()=>{ if (state.lastLine === W.finale && ov.classList.contains('show')) say(praise); });
 }
 
 /* ---------------- start / reset ---------------- */
