@@ -250,7 +250,7 @@ const sfx = { found:()=>blip([523,659,784,1047,1319],.14,'triangle'), rustle:()=
    iPhone mutes Web Audio when the side switch is on silent while the narration still plays, so the page asks
    for a "playback" audio session (Safari 16.4+). */
 const MUSIC_GAIN = 0.04, MUSIC_DUCK = 0.35;
-let bgmGain = null, bgmSrc = null, bgmUrl = '', bgmOff = false, speaking = false, musicTok = 0;
+let bgmGain = null, bgmSrc = null, bgmUrl = '', bgmOff = false, speaking = false, musicTok = 0, musicBusy = false;
 const musicBytes = {}, musicBufs = {};
 try{ bgmOff = localStorage.getItem('shaulMusicOff') === '1'; }catch(e){}
 try{ if (navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){}
@@ -271,13 +271,15 @@ function musicStart(){
   try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){ return; }
   if (!bgmGain){ bgmGain = actx.createGain(); bgmGain.gain.value = 0; bgmGain.connect(actx.destination); }
   if (bgmSrc && bgmUrl === url){ musicApply(1.2); return; }       // already looping (again / back from a stop)
+  musicBusy = true;
   musicDecode(url).then(buf=>{
+    musicBusy = false;
     if (my !== musicTok) return;
     if (bgmSrc){ try{ bgmSrc.stop(); }catch(e){} }
     bgmSrc = actx.createBufferSource(); bgmSrc.buffer = buf; bgmSrc.loop = true; bgmSrc.connect(bgmGain); bgmUrl = url;
     bgmGain.gain.cancelScheduledValues(actx.currentTime); bgmGain.gain.setValueAtTime(0, actx.currentTime);
     bgmSrc.start(); musicApply(1.2);                              // soft fade-in
-  }).catch(()=>{});
+  }).catch(()=>{ musicBusy = false; delete musicBufs[url]; delete musicBytes[url]; });   // next kick retries
 }
 function musicStop(){
   const my = ++musicTok;
@@ -285,9 +287,21 @@ function musicStop(){
   bgmGain.gain.setTargetAtTime(0, actx.currentTime, .15);
   setTimeout(()=>{ if (my === musicTok && bgmSrc){ try{ bgmSrc.stop(); }catch(e){} bgmSrc = null; bgmUrl = ''; } }, 700);
 }
-const duck = on => ()=>{ speaking = on; musicApply(on ? .12 : .5); };
+/* v22 (user: "the music works only after pressing 🎵 twice"): the first ▶ tap starts the music, but a phone can
+   leave the audio engine suspended or "interrupted" (iPhone counts touchend, not pointerdown, and the narration
+   starting can interrupt it). So the game keeps checking: on every tap, every line of narration and every state
+   change, if the music should be playing it wakes the engine and restarts the loop when it's missing. */
+const musicWanted = ()=> !!W.music && !bgmOff && !document.hidden && !$('#start').classList.contains('show');
+function musicKick(){
+  if (!musicWanted()) return;
+  try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); if (actx.state !== 'running') actx.resume(); }catch(e){ return; }
+  if (!bgmSrc && !musicBusy) musicStart();
+}
+['pointerdown','touchend','click'].forEach(ev=> window.addEventListener(ev, ()=> setTimeout(musicKick, 0), {capture:true, passive:true}));
+const duck = on => ()=>{ speaking = on; musicApply(on ? .12 : .5); if (on) musicKick(); };
 voice.addEventListener('playing', duck(true)); voice.addEventListener('pause', duck(false)); voice.addEventListener('ended', duck(false));
-document.addEventListener('visibilitychange', ()=>{ if (!actx) return; if (document.hidden) actx.suspend(); else actx.resume(); });
+document.addEventListener('visibilitychange', ()=>{ if (!actx) return; if (document.hidden) actx.suspend(); else musicKick(); });
+setInterval(musicKick, 2000);
 WORLDS.forEach(w=>{ if (w.music) musicFetch(w.music).catch(()=>{}); });
 /* ---------------- scene geometry ---------------- */
 const vw=()=>window.innerWidth, vh=()=>window.innerHeight;
