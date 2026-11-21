@@ -409,6 +409,9 @@ async function answer(btn,L,T){
 $('#earBtn').addEventListener('pointerdown', ()=>{ const q=state.quiz; if(q && q.n<q.order.length) say('q_'+q.order[q.n].id); });
 
 /* ---------------- celebrate ---------------- */
+// 21/11 the user: WhatsApp share buttons (always share the public site, also from the artifact copy)
+const SHARE_TEXT = '🐢 משחק אלף-בית חינמי לילדים עם שאול הצב! מוצאים את כל האותיות מאָלֶף ועד תָּו 👇\nhttps://shaulhatzav-dotcom.github.io/alef-bet/';
+document.querySelectorAll('.waShare').forEach(a => { a.href = 'https://wa.me/?text=' + encodeURIComponent(SHARE_TEXT); });
 // 21/11 the user: a 5-second reward clip per world (Grok, muted; the game keeps its own ta-da + praise).
 // Landscape / desktop: the clip fills the screen while it plays, then shrinks into a card and the buttons appear.
 // Portrait: it is a card from the start. A tap on the clip skips to the card. Worlds without a clip keep friends.png.

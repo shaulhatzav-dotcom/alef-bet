@@ -117,6 +117,16 @@
   .ytBtn i::after{content:''; position:absolute; left:50%; top:50%; transform:translate(-35%,-50%); border-style:solid; border-width:.3em 0 .3em .5em;
     border-color:transparent transparent transparent #fff}
   #start .ytBtn{position:absolute; bottom:max(16px,env(safe-area-inset-bottom)); left:max(16px,env(safe-area-inset-left))}
+  /* 21/11 the user: a WhatsApp button so anyone can share the game (wa.me link, text + site URL set in game.js) */
+  .ytBtn i.wa, .roundBtn i.wa{background:#25d366; border-radius:50%; width:1.25em; height:1.25em}
+  .ytBtn i.wa::after, .roundBtn i.wa::after{content:'✆'; border:0; color:#fff; font-size:.85em; line-height:1; transform:translate(-50%,-52%); font-family:system-ui,sans-serif}
+  #start .waBtn{bottom:calc(max(16px,env(safe-area-inset-bottom)) + 3.1em)}
+  #celebrate .waBtn{margin-top:1.4vh}
+  @media (orientation:landscape){ #celebrate .waBtn{left:auto; right:max(16px,env(safe-area-inset-right))} }
+  #waMini{top:calc(max(10px,env(safe-area-inset-top)) + 2*min(12vh,64px,12vw) + 24px); right:12px; z-index:45; display:flex; align-items:center; justify-content:center; text-decoration:none}
+  #waMini i.wa{width:60%; height:60%; position:relative; display:block}
+  #waMini i.wa::after{position:absolute; left:50%; top:50%; font-size:min(3.6vh,19px,3.6vw)}
+  #game:has(#start.show) #waMini, #game:has(#celebrate.show) #waMini{display:none}
   #celebrate .ytBtn{margin-top:2.4vh; font-size:min(4.6vh,26px,5.4vw)}
   @media (orientation:landscape){ #celebrate .ytBtn{position:absolute; margin:0; font-size:min(4.6vh,22px);
     bottom:max(14px,env(safe-area-inset-bottom)); left:max(16px,env(safe-area-inset-left))} }
@@ -219,7 +229,8 @@
   <div id="hud"></div>
   <button class="roundBtn" id="soundBtn" aria-label="שמע שוב">🔊</button>
   <button class="roundBtn" id="homeBtn" aria-label="התחלה">🏠</button>
-  <a class="roundBtn" id="ytMini" href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener" aria-label="שאול הצב ביוטיוב"><i></i></a>
+  <a class="roundBtn waShare" id="waMini" target="_blank" rel="noopener" aria-label="שתפו בוואטסאפ"><i class="wa"></i></a>
+  <a class="roundBtn" id="ytMini"href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener" aria-label="שאול הצב ביוטיוב"><i></i></a>
 
   <div class="overlay show" id="start">
     <div class="bgPic" style="background-image:url(img/map.jpg)"></div>
@@ -228,6 +239,7 @@
     <button class="playBtn" id="playBtn" aria-label="שחק">▶</button>
     <img class="shaulBig" src="img/shaul.png" alt="">
     <a class="ytBtn" href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener"><i></i>פרקים של שאול ביוטיוב</a>
+    <a class="ytBtn waBtn waShare" target="_blank" rel="noopener"><i class="wa"></i>שתפו בוואטסאפ</a>
   </div>
 
   <div class="overlay" id="found">
@@ -258,6 +270,7 @@
       <button class="worldBtn next" id="nextWorldBtn" aria-label="לשלב הבא"><i>▶</i></button>
     </div>
     <a class="ytBtn" href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener"><i></i>עוד שאול הצב ביוטיוב</a>
+    <a class="ytBtn waBtn waShare" target="_blank" rel="noopener"><i class="wa"></i>שתפו את המשחק בוואטסאפ</a>
   </div>
 </div>
-<script src="game.js?v=18"></script>
+<script src="game.js?v=19"></script>
