@@ -1,26 +1,8 @@
-<!doctype html>
-<html lang="he" dir="rtl">
-<head>
 <meta charset="utf-8">
-<meta property="og:image" content="https://shaulhatzav-dotcom.github.io/alef-bet/img/share-sq.jpg">
-<meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:width" content="500">
-<meta property="og:image:height" content="500">
-<meta itemprop="image" content="https://shaulhatzav-dotcom.github.io/alef-bet/img/share-sq.jpg">
-<link rel="image_src" href="https://shaulhatzav-dotcom.github.io/alef-bet/img/share-sq.jpg">
-<meta name="twitter:image" content="https://shaulhatzav-dotcom.github.io/alef-bet/img/share-sq.jpg">
-<title>אלף בית עם שאול הצב</title>
+<title>אלף בית ביער</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="description" content="משחק אלף-בית חינמי לילדים בגילאי 3–7: מוצאים את האותיות עם שאול הצב ביער, בחווה, בחורף, בפיקניק ובשמיים, מאלף ועד תו. עם קריינות, בלי פרסומות.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="אלף בית עם שאול הצב 🐢">
-<meta property="og:description" content="משחק אלף-בית חינמי לילדים בגילאי 3–7: מוצאים את האותיות עם שאול הצב ביער, בחווה, בחורף, בפיקניק ובשמיים, מאלף ועד תו.">
-<meta property="og:site_name" content="שאול הצב">
-<meta property="og:locale" content="he_IL">
-<meta property="og:image:alt" content="שאול הצב ביער, משחק אלף בית"><meta property="og:url" content="https://shaulhatzav-dotcom.github.io/alef-bet/">
-<meta name="twitter:card" content="summary">
-<link rel="icon" href="img/shaul.png"><script>document.documentElement.lang='he'; document.documentElement.dir='rtl';</script>
-<!-- site copy for GitHub Pages: full document + link-preview card. Source of truth: games/shaul-alef-bet -->
+<script>document.documentElement.lang='he'; document.documentElement.dir='rtl';</script>
+<!-- No html/head/body tags: the Artifact publisher wraps the page; browsers add them locally. Single dark look on purpose (night forest). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Varela+Round&display=swap" rel="stylesheet">
 <style>
@@ -168,6 +150,16 @@
      Almost transparent; the colour is a thin swirling thin-film rim + two light reflections; the film wobbles as it floats. */
   #bubbles{position:absolute; inset:0; overflow:hidden; z-index:1; pointer-events:none}
   #celebrate .celebBtns, #celebrate .ytBtn, #celebrate .plank{position:relative; z-index:2}
+  /* 21/11 reward clip: a card under the letters; in landscape it first fills the screen (.vidFull) */
+  #celebrate .friends[hidden], #celebrate .rewardCard[hidden]{display:none}
+  #celebrate .rewardCard{position:relative; z-index:2; width:min(92vw,62vh*16/9,900px); aspect-ratio:16/9; max-width:100%; border-radius:22px; overflow:hidden;
+    border:5px solid #fff; box-shadow:0 14px 30px rgba(0,0,0,.45), 0 0 0 3px rgba(255,210,63,.8); background:#000; margin-top:1.5vh}
+  #celebrate .rewardCard.pop{animation:cardIn .5s cubic-bezier(.2,1.4,.4,1) both}
+  #celebrate .rewardCard video{width:100%; height:100%; object-fit:cover; display:block}
+  @keyframes cardIn{from{transform:scale(.6); opacity:0}}
+  #celebrate.vidFull .rewardCard{position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; max-width:none; margin:0; border:0; border-radius:0; box-shadow:none; z-index:20}
+  #celebrate.vidFull .rewardCard video{object-fit:contain}
+  #celebrate.vidFull .plank, #celebrate.vidFull .celebBtns, #celebrate.vidFull .ytBtn{visibility:hidden}
   .sb{position:absolute; bottom:-140px; pointer-events:auto; cursor:pointer; animation:sbRise linear forwards, sbSway 3s ease-in-out infinite alternate}
   .sb .b{position:absolute; inset:0; border-radius:50%; animation:sbWobble 2.2s ease-in-out infinite alternate;
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.35), inset 0 0 calc(var(--d)*.12) rgba(255,255,255,.25), 0 0 calc(var(--d)*.06) rgba(255,255,255,.18)}
@@ -209,8 +201,6 @@
     #start .shaulBig{right:3%; height:24vh}
   }
 </style>
-</head>
-<body>
 <div id="game">
   <div id="stage">
     <div id="scene"><div id="spots"></div><div id="riser"></div>
@@ -255,6 +245,7 @@
     <div id="bubbles"></div>
     <div class="plank" id="celebRow"></div>
     <img class="friends" src="img/friends.png" alt="שאול וחברים">
+    <div class="rewardCard" id="rewardCard" hidden><video id="rewardVid" muted playsinline preload="auto"></video></div>
     <div class="celebBtns">
       <button class="playBtn" id="againBtn" aria-label="שחק שוב">↻</button>
       <button class="worldBtn next" id="nextWorldBtn" aria-label="לשלב הבא"><i>▶</i></button>
@@ -262,6 +253,4 @@
     <a class="ytBtn" href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener"><i></i>עוד שאול הצב ביוטיוב</a>
   </div>
 </div>
-<script src="game.js?v=14"></script>
-</body>
-</html>
+<script src="game.js?v=15"></script>

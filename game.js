@@ -7,7 +7,7 @@
 
 // worlds (stages), played in order. 20/11: world 2 = Grandma's farm (art/worlds/farm-v2, morning), letters ו–י
 const WORLDS = [
-  { id:'forest', img:'img/world-forest.jpg', ar:2128/912, ground:0.93, title:'אלף בית ביער', intro:'intro', finale:'finale',
+  { id:'forest', img:'img/world-forest.jpg', ar:2128/912, ground:0.93, title:'אלף בית ביער', intro:'intro', finale:'finale', reward:'clips/reward-forest.mp4',
     letters:[
       { id:'alef',  ch:'א', color:'#e63946', wordPlain:'ארנב' },
       { id:'bet',   ch:'ב', color:'#f77f00', wordPlain:'בלוט' },
@@ -409,6 +409,26 @@ async function answer(btn,L,T){
 $('#earBtn').addEventListener('pointerdown', ()=>{ const q=state.quiz; if(q && q.n<q.order.length) say('q_'+q.order[q.n].id); });
 
 /* ---------------- celebrate ---------------- */
+// 21/11 the user: a 5-second reward clip per world (Grok, muted; the game keeps its own ta-da + praise).
+// Landscape / desktop: the clip fills the screen while it plays, then shrinks into a card and the buttons appear.
+// Portrait: it is a card from the start. A tap on the clip skips to the card. Worlds without a clip keep friends.png.
+function rewardClip(ov){
+  const card=$('#rewardCard'), vid=$('#rewardVid'), friends=ov.querySelector('.friends');
+  clearTimeout(state.clipTimer); ov.classList.remove('vidFull');
+  if (!W.reward){ card.hidden=true; vid.removeAttribute('src'); friends.hidden=false; return; }
+  friends.hidden=true; card.hidden=false;
+  card.classList.remove('pop'); void card.offsetWidth; card.classList.add('pop');
+  if (!vid.src.endsWith(W.reward)) vid.src=W.reward;
+  vid.currentTime=0; vid.play().catch(()=>{});
+  const toCard=()=>{ clearTimeout(state.clipTimer);
+    if (!ov.classList.contains('vidFull')) return;
+    ov.classList.remove('vidFull'); card.classList.remove('pop'); void card.offsetWidth; card.classList.add('pop'); };
+  if (matchMedia('(orientation:landscape)').matches){
+    ov.classList.add('vidFull');
+    state.clipTimer=setTimeout(toCard, 8000);   // safety, in case "ended" never fires
+  }
+  vid.onended=toCard; card.onpointerdown=toCard;
+}
 function celebrate(){
   $('#quiz').classList.remove('show');
   const ov=$('#celebrate'); ov.classList.add('show');
@@ -416,6 +436,7 @@ function celebrate(){
   // 21/11 the user: realistic soap bubbles instead of confetti (tap one = it pops into droplets; no extra sound)
   const box=$('#bubbles'); box.innerHTML='';
   for(let i=0;i<24;i++) setTimeout(()=>{ if (ov.classList.contains('show')) soapBubble(box); }, i*250);
+  rewardClip(ov);
   const next = WORLDS[state.w+1];
   $('#nextWorldBtn').classList.toggle('show', !!next);
   if (next) $('#nextWorldBtn').style.backgroundImage = `url(${next.img})`;
@@ -455,6 +476,7 @@ function reset(){
   stopVoice(); clearTimeout(state.idleTimer);
   state.found.clear(); state.target=null; state.quiz=null; state.busy=true;
   document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('show')); $('#bubbles').innerHTML='';
+  clearTimeout(state.clipTimer); $('#rewardVid').pause(); $('#celebrate').classList.remove('vidFull');
   buildHud(); loadScene(0); state.x = state.sw*0.93; face(-1); layout();
 }
 async function begin(w){
