@@ -243,43 +243,52 @@ const sfx = { found:()=>blip([523,659,784,1047,1319],.14,'triangle'), rustle:()=
 
 /* ---------------- background music ---------------- */
 /* 21/11 the user approved by ear: Suno "forest loop" version B, 4% of its level, and lower still (x0.35) while anyone
-   speaks. Through a Web Audio gain node, because iPhone ignores audio.volume. 🎵 turns only the music off (remembered). */
+   speaks. 🎵 turns only the music off (remembered).
+   v21 (user: "the music doesn't start"): no <audio> element any more. The mp3 is fetched, decoded once, and loops
+   as a Web Audio buffer through a gain node. That works inside the claude.ai artifact (an element routed into
+   Web Audio can come out silent there), iPhone keeps the 4% (it ignores audio.volume), and the loop has no gap.
+   iPhone mutes Web Audio when the side switch is on silent while the narration still plays, so the page asks
+   for a "playback" audio session (Safari 16.4+). */
 const MUSIC_GAIN = 0.04, MUSIC_DUCK = 0.35;
-const bgm = new Audio(); bgm.loop = true; bgm.preload = 'none'; bgm.setAttribute('playsinline', '');
-let bgmGain = null, bgmOff = false, speaking = false;
+let bgmGain = null, bgmSrc = null, bgmUrl = '', bgmOff = false, speaking = false, musicTok = 0;
+const musicBytes = {}, musicBufs = {};
 try{ bgmOff = localStorage.getItem('shaulMusicOff') === '1'; }catch(e){}
+try{ if (navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){}
 const musicLevel = ()=> bgmOff ? 0 : MUSIC_GAIN * (speaking ? MUSIC_DUCK : 1);
-function musicApply(t=.3){
-  if (bgmGain){ bgmGain.gain.setTargetAtTime(musicLevel(), actx.currentTime, t); return; }
-  bgm.volume = Math.min(1, musicLevel());      // no Web Audio: plain volume (works on computers / Android)
+function musicApply(t=.3){ if (bgmGain && bgmSrc) bgmGain.gain.setTargetAtTime(musicLevel(), actx.currentTime, t); }
+function musicFetch(url){            // start downloading early (no Web Audio needed yet)
+  return musicBytes[url] = musicBytes[url] || fetch(url).then(r=>{ if(!r.ok) throw new Error(r.status); return r.arrayBuffer(); });
 }
-function musicWire(){
-  if (bgmGain || !actx) return;
-  try{ bgmGain = actx.createGain(); bgmGain.gain.value = 0; actx.createMediaElementSource(bgm).connect(bgmGain).connect(actx.destination); }
-  catch(e){ bgmGain = null; }
+function musicDecode(url){
+  return musicBufs[url] = musicBufs[url] || musicFetch(url).then(ab=> new Promise((res, rej)=>{
+    const p = actx.decodeAudioData(ab.slice(0), res, rej); if (p && p.then) p.then(res, rej);   // old Safari = callbacks only
+  }));
 }
 function musicStart(){
   const btn = $('#musicBtn'); btn.hidden = !W.music; btn.classList.toggle('off', bgmOff);
-  if (!W.music){ musicStop(); return; }
-  musicTok++;                                   // cancel a pending stop (again / next world)
-  try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){}
-  musicWire();
-  if (!bgm.src.endsWith(W.music)){ bgm.src = W.music; }
-  if (bgmGain) bgmGain.gain.setValueAtTime(0, actx.currentTime);
-  if (bgmOff) return;
-  bgm.play().catch(()=>{});
-  musicApply(1.2);                              // soft fade-in
+  if (!W.music || bgmOff){ musicStop(); return; }
+  const my = ++musicTok, url = W.music;
+  try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){ return; }
+  if (!bgmGain){ bgmGain = actx.createGain(); bgmGain.gain.value = 0; bgmGain.connect(actx.destination); }
+  if (bgmSrc && bgmUrl === url){ musicApply(1.2); return; }       // already looping (again / back from a stop)
+  musicDecode(url).then(buf=>{
+    if (my !== musicTok) return;
+    if (bgmSrc){ try{ bgmSrc.stop(); }catch(e){} }
+    bgmSrc = actx.createBufferSource(); bgmSrc.buffer = buf; bgmSrc.loop = true; bgmSrc.connect(bgmGain); bgmUrl = url;
+    bgmGain.gain.cancelScheduledValues(actx.currentTime); bgmGain.gain.setValueAtTime(0, actx.currentTime);
+    bgmSrc.start(); musicApply(1.2);                              // soft fade-in
+  }).catch(()=>{});
 }
-let musicTok = 0;
 function musicStop(){
   const my = ++musicTok;
-  if (bgmGain && actx) bgmGain.gain.setTargetAtTime(0, actx.currentTime, .15); else bgm.volume = 0;
-  setTimeout(()=>{ if (my === musicTok) bgm.pause(); }, 600);
+  if (!bgmGain || !actx) return;
+  bgmGain.gain.setTargetAtTime(0, actx.currentTime, .15);
+  setTimeout(()=>{ if (my === musicTok && bgmSrc){ try{ bgmSrc.stop(); }catch(e){} bgmSrc = null; bgmUrl = ''; } }, 700);
 }
 const duck = on => ()=>{ speaking = on; musicApply(on ? .12 : .5); };
 voice.addEventListener('playing', duck(true)); voice.addEventListener('pause', duck(false)); voice.addEventListener('ended', duck(false));
-document.addEventListener('visibilitychange', ()=>{ if (document.hidden) bgm.pause(); else if (W.music && !bgmOff && !$('#start').classList.contains('show')) bgm.play().catch(()=>{}); });
-
+document.addEventListener('visibilitychange', ()=>{ if (!actx) return; if (document.hidden) actx.suspend(); else actx.resume(); });
+WORLDS.forEach(w=>{ if (w.music) musicFetch(w.music).catch(()=>{}); });
 /* ---------------- scene geometry ---------------- */
 const vw=()=>window.innerWidth, vh=()=>window.innerHeight;
 function layout(){
