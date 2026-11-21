@@ -70,6 +70,19 @@ const WORLDS = [
       [0.34,0.64],   // at the sandbox corner, by the toy turtle's cart (0.42 left the turtle off screen)
       [0.10,0.68],   // by the hedgehog, under the mushrooms
     ] },
+  // 21/11: world 5 = sky at dusk (art/worlds/sky-v1, the user's pick), the last letters ר ש ת. Ends the whole alef-bet.
+  // Right to left: rocket on its wooden stand, the big setting sun, parrot on the tree branch.
+  { id:'sky', img:'img/world-sky.jpg', ar:2128/912, ground:0.90, title:'אלף בית בשמיים', intro:'intro_sky', finale:'finale_sky',
+    letters:[
+      { id:'resh', ch:'ר', color:'#e63946', wordPlain:'רקטה' },
+      { id:'shin', ch:'ש', color:'#f77f00', wordPlain:'שמש'  },
+      { id:'tav',  ch:'ת', color:'#4361ee', wordPlain:'תוכי' },
+    ],
+    spots:[
+      [0.85,0.70],   // on the rocket's wooden stand
+      [0.46,0.66],   // at the foot of the setting sun
+      [0.12,0.62],   // on the tree trunk under the parrot
+    ] },
 ];
 let W = WORLDS[0], WORLD = W, LETTERS = W.letters, SCENES = W.spots.map(s=>({spot:s}));
 function setWorld(i){
@@ -142,6 +155,15 @@ const LINES = {
   q_tsadi:  'אֵיפֹה הָאוֹת צָדִיק?',
   q_qof:    'אֵיפֹה הָאוֹת קוּף?',
   finale_picnic: 'הִצְלַחְתֶּם! עַיִן, פֵּא, צָדִיק, קוּף! עַכְשָׁו אֶפְשָׁר לֶאֱכוֹל עוּגָה. כָּל הַכָּבוֹד!',
+  // 21/11 world 5, sky (07 = "זאת האות" from l_resh + "תו" from q_tav + the rest of take D; 08 = take D + "כל הכבוד" from praise_1)
+  intro_sky: 'לַיְלָה טוֹב! הַכּוֹכָבִים יוֹצְאִים, וְנִשְׁאֲרוּ עוֹד שָׁלוֹשׁ אוֹתִיּוֹת. רוֹאִים מַשֶּׁהוּ נוֹצֵץ? לַחֲצוּ עָלָיו!',
+  l_resh:   'זֹאת הָאוֹת רֵישׁ! רָ, כְּמוֹ רָקֵטָה!',
+  l_shin:   'זֹאת הָאוֹת שִׁין! שֶׁ, כְּמוֹ שֶׁמֶשׁ!',
+  l_tav:    'זֹאת הָאוֹת תָּו! תּוּ, כְּמוֹ תּוּכִּי!',
+  q_resh:   'אֵיפֹה הָאוֹת רֵישׁ?',
+  q_shin:   'אֵיפֹה הָאוֹת שִׁין?',
+  q_tav:    'אֵיפֹה הָאוֹת תָּו?',
+  finale_sky: 'הִצְלַחְתֶּם! רֵישׁ, שִׁין, תָּו! מְצָאתֶם אֶת כָּל הָאוֹתִיּוֹת, מֵאָלֶף וְעַד תָּו! כָּל הַכָּבוֹד!',
   // 21/11 the user: a praise at the end of every world (after the finale), a different one each time
   praise_1: 'כָּל הַכָּבוֹד! אַתֶּם מַמְשִׁיכִים לַשָּׁלָב הַבָּא!',
   praise_2: 'כָּל הַכָּבוֹד! עֲלִיתֶם שָׁלָב!',
