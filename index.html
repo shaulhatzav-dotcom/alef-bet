@@ -4,7 +4,7 @@
 <script>document.documentElement.lang='he'; document.documentElement.dir='rtl';</script>
 <!-- No html/head/body tags: the Artifact publisher wraps the page; browsers add them locally. Single dark look on purpose (night forest). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Varela+Round&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Varela+Round&family=Gveret+Levin&display=swap" rel="stylesheet">
 <style>
   :root{ --gold:#ffd23f; --ink:#2b2140; }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none}
@@ -172,6 +172,18 @@
   .wordTxt{font-family:'Secular One'; font-size:min(9vh,50px)}
   .wordTxt b{color:var(--c)}
 
+  /* 24/11 cursive mode ("כתב"): body.ktav swaps the letter font; the card shows the print letter beside the cursive one */
+  .modeSwitch{display:flex; gap:6px; margin-top:1.6vh; background:rgba(255,255,255,.93); border-radius:999px; padding:5px;
+    box-shadow:0 4px 0 #c9a227, 0 8px 18px rgba(0,0,0,.35); z-index:2}
+  .modeSwitch button{border:none; background:transparent; border-radius:999px; padding:.18em .9em; font-family:'Secular One'; font-size:min(3.8vh,21px,4.8vw);
+    color:#2b2b2b; cursor:pointer; display:flex; align-items:center; gap:.45em; line-height:1.2}
+  .modeSwitch button b{font-weight:400; font-size:1.3em; line-height:1; color:#4361ee}
+  .modeSwitch button[data-m=ktav] b{font-family:'Gveret Levin','Secular One'; font-size:1.65em}
+  .modeSwitch button.on{background:#ffd23f; box-shadow:0 3px 0 #c9a227}
+  body.ktav .spot .peek, body.ktav #riser, body.ktav .slot, body.ktav .bigLetter, body.ktav .choice, body.ktav .wordTxt, body.ktav #celebRow{font-family:'Gveret Levin','Secular One'}
+  body.ktav .wordTxt{font-size:min(11vh,62px)}
+  body.ktav .bigLetter::after{content:attr(data-print); font-family:'Secular One'; font-size:.3em; -webkit-text-stroke:3px #fff; opacity:.8; margin-inline-start:.1em; vertical-align:top}
+
   /* quiz */
   #quiz .bgPic{filter:blur(6px) brightness(.75); transform:scale(1.08)}
   /* 24/11 the user: Shaul's face + a "?" bubble instead of the ear emoji (looked different on every phone, unclear to a 4-year-old) */
@@ -274,6 +286,10 @@
     <div class="bgPic" style="background-image:url(img/map.jpg)"></div>
     <div class="plank" id="titlePlank"></div>
     <div class="subPlank">עִם שָׁאוּל הַצָּב</div>
+    <div class="modeSwitch" id="modeSwitch" role="group" aria-label="סוג האותיות">
+      <button type="button" data-m="dfus" class="on" aria-pressed="true"><b>אב</b>דפוס</button>
+      <button type="button" data-m="ktav" aria-pressed="false"><b>אב</b>כתב</button>
+    </div>
     <button class="playBtn" id="playBtn" aria-label="שחק">▶</button>
     <img class="shaulBig" src="img/shaul.png" alt="">
     <a class="ytBtn" href="https://www.youtube.com/channel/UC1-MnNsGyyjfJZPgiCrN3sg" target="_blank" rel="noopener"><i></i>פרקים של שאול ביוטיוב</a>
@@ -314,4 +330,4 @@
     <a class="ytBtn waBtn waShare" target="_blank" rel="noopener"><i class="wa"></i>שתפו את המשחק בוואטסאפ</a>
   </div>
 </div>
-<script src="game.js?v=26"></script>
+<script src="game.js?v=27"></script>

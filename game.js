@@ -418,7 +418,7 @@ async function onSpot(){
 async function showCard(L){
   const ov=$('#found'), card=$('#foundCard');
   card.style.setProperty('--c',L.color);
-  $('#fLetter').textContent=L.ch;
+  $('#fLetter').textContent=L.ch; $('#fLetter').dataset.print=L.ch;   // cursive mode shows the print letter beside it (CSS ::after)
   $('#fPic').innerHTML = `<img src="img/word-${L.id}.jpg" alt="${L.wordPlain}">`;
   $('#fWord').innerHTML = `<b>${L.wordPlain[0]}</b>${L.wordPlain.slice(1)}`;
   card.style.animation='none'; card.offsetHeight; card.style.animation='';
@@ -577,7 +577,7 @@ function reset(){
 async function begin(w){
   if (typeof w === 'number' && w !== state.w){ setWorld(w); reset(); }
   $('#start').classList.remove('show');
-  count('play');
+  count('play'); if (ktav) count('play-ktav');
   try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){}
   musicStart();       // still inside the tap, so iPhone lets it play
   state.busy=false;   // kids tap right away; let them walk while Shaul talks
@@ -587,6 +587,16 @@ async function begin(w){
 }
 // start screen: one big ▶ that always starts at the forest (21/11 the user: the farm opens only after finishing the forest)
 $('#playBtn').addEventListener('pointerdown', ()=> begin(0));
+/* 24/11 cursive mode: the start screen has a "דפוס / כתב" choice; body.ktav swaps the letter font (CSS). Same art, same narration.
+   The choice is remembered on this device. */
+let ktav = false;
+function setMode(k){
+  ktav = !!k; document.body.classList.toggle('ktav', ktav);
+  document.querySelectorAll('#modeSwitch button').forEach(b=>{ const on = (b.dataset.m==='ktav')===ktav; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  try{ localStorage.setItem('shaulKtav', ktav ? '1' : '0'); }catch(err){}
+}
+document.querySelectorAll('#modeSwitch button').forEach(b=> b.addEventListener('pointerdown', e=>{ e.stopPropagation(); setMode(b.dataset.m==='ktav'); }));
+try{ if (localStorage.getItem('shaulKtav')==='1') setMode(true); }catch(err){}
 $('#againBtn').addEventListener('pointerdown', ()=>{ reset(); begin(); });
 $('#nextWorldBtn').addEventListener('pointerdown', async ()=>{
   stopVoice(); sfx.whoosh(); $('#fade').classList.add('on'); await wait(600);
