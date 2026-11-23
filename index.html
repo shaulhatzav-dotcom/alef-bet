@@ -25,7 +25,22 @@
   .spot.hint .peek{opacity:.75; animation:bob 1s infinite}
   .spot.hint .glow{animation:breathe .8s infinite}
   .spot.done{pointer-events:none}
-  .spot.done .glow, .spot.done .fly{display:none}
+  /* 23/11: visible on bright backgrounds too (the mountain): dark halo + pulsing rings + a twinkling star */
+  .spot::before{content:''; position:absolute; inset:12%; border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, rgba(20,26,46,.42) 0%, rgba(20,26,46,.26) 42%, rgba(20,26,46,0) 70%)}
+  .spot .ring{position:absolute; inset:24%; border-radius:50%; pointer-events:none; border:calc(var(--spotW,80px)*.028) solid #fff;
+    box-shadow:0 0 0 calc(var(--spotW,80px)*.012) rgba(20,26,46,.6), 0 0 calc(var(--spotW,80px)*.12) calc(var(--spotW,80px)*.035) #ffd23f, inset 0 0 calc(var(--spotW,80px)*.08) #ffd23f;
+    animation:ping 1.7s infinite ease-out}
+  .spot .ring.r2{animation-delay:.85s}
+  .spot .star{position:absolute; inset:31%; background:#fff; pointer-events:none;
+    clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);
+    filter:drop-shadow(0 0 2px #141a2e) drop-shadow(0 0 3px #141a2e) drop-shadow(0 0 9px #ffd23f); animation:twinkle 1.3s infinite ease-in-out}
+  .spot.hint .ring{animation-duration:.95s; border-color:#ffd23f}
+  .spot.hint .star{animation-duration:.7s}
+  .spot.hint::after{content:'👆'; position:absolute; left:50%; top:74%; font-size:calc(var(--spotW,80px)*.4); line-height:1; pointer-events:none;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.6)); animation:pointUp .7s infinite ease-in-out}
+  .spot.done .glow, .spot.done .fly, .spot.done .ring, .spot.done .star{display:none}
+  .spot.done::before, .spot.done::after{display:none}
   .fly{position:absolute; width:7%; height:7%; border-radius:50%; background:#fff6b8; box-shadow:0 0 10px 5px #ffe066; pointer-events:none; animation:firefly 3s infinite ease-in-out}
 
   /* the letter rising out of its hiding place */
@@ -213,6 +228,9 @@
 
   @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px) rotate(-4deg)}40%{transform:translateX(12px) rotate(4deg)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10%)}}
+  @keyframes ping{0%{transform:scale(.5); opacity:1}75%{opacity:.35}100%{transform:scale(1.4); opacity:0}}
+  @keyframes twinkle{0%,100%{transform:scale(.7) rotate(0deg)}50%{transform:scale(1.2) rotate(45deg)}}
+  @keyframes pointUp{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-22%)}}
   @keyframes breathe{0%,100%{transform:scale(.8); opacity:.6}50%{transform:scale(1.15); opacity:1}}
   @keyframes firefly{0%,100%{transform:translate(0,0); opacity:.2}25%{opacity:1}50%{transform:translate(30%,-60%); opacity:.9}75%{transform:translate(-40%,-20%); opacity:.4}}
   @keyframes waddle{from{transform:rotate(-4deg) translateY(0)}to{transform:rotate(4deg) translateY(-5%)}}
@@ -291,4 +309,4 @@
     <a class="ytBtn waBtn waShare" target="_blank" rel="noopener"><i class="wa"></i>שתפו את המשחק בוואטסאפ</a>
   </div>
 </div>
-<script src="game.js?v=25"></script>
+<script src="game.js?v=26"></script>

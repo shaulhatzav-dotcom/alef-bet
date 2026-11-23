@@ -363,7 +363,7 @@ function loadScene(n){
   const box = $('#spots'); box.innerHTML='';
   const s = document.createElement('div'); s.className='spot';
   s.style.left = (S.spot[0]*100)+'%'; s.style.top = (S.spot[1]*100)+'%';
-  s.innerHTML = `<div class="glow"></div><div class="peek" style="--c:${L.color}">${L.ch}</div>`;
+  s.innerHTML = `<div class="glow"></div><div class="ring"></div><div class="ring r2"></div><div class="star"></div><div class="peek" style="--c:${L.color}">${L.ch}</div>`;
   for(let k=0;k<5;k++){ const f=document.createElement('div'); f.className='fly';
     f.style.left=(20+Math.random()*60)+'%'; f.style.top=(20+Math.random()*60)+'%'; f.style.animationDelay=(k*.6)+'s'; f.style.animationDuration=(2.4+Math.random()*1.6)+'s'; s.appendChild(f); }
   s.addEventListener('pointerdown', e=>{ e.stopPropagation(); onSpot(); });
