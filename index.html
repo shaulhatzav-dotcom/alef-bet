@@ -174,8 +174,13 @@
 
   /* quiz */
   #quiz .bgPic{filter:blur(6px) brightness(.75); transform:scale(1.08)}
-  #quiz .ear{border:none; background:#fff; border-radius:50%; width:min(17vh,100px); height:min(17vh,100px); font-size:min(10vh,56px);
-    box-shadow:0 6px 0 #c9a227, 0 0 30px rgba(255,214,80,.6); cursor:pointer; margin-bottom:4vh; animation:pulse 1.4s infinite}
+  /* 24/11 the user: Shaul's face + a "?" bubble instead of the ear emoji (looked different on every phone, unclear to a 4-year-old) */
+  #quiz .ear{position:relative; border:none; padding:0; background:#bfe9ff; border-radius:50%; width:min(23vh,132px); height:min(23vh,132px);
+    box-shadow:0 6px 0 #c9a227, 0 0 0 4px #fff, 0 0 30px rgba(255,214,80,.6); cursor:pointer; margin-bottom:3vh; animation:pulse 1.4s infinite}
+  #quiz .ear .face{position:absolute; inset:0; border-radius:50%; overflow:hidden; pointer-events:none}
+  #quiz .ear .face img{position:absolute; width:150%; left:-22%; top:-4%}
+  #quiz .ear .q{position:absolute; top:-8%; left:-10%; width:42%; height:42%; border-radius:50%; background:#ffd23f; border:3px solid #22264a;
+    display:grid; place-items:center; font:900 min(7vh,40px)/1 'Secular One',sans-serif; color:#22264a; pointer-events:none}
   #choices{display:flex; gap:4vh}
   .choice{width:min(32vh,190px); aspect-ratio:1; border-radius:34px; border:none; background:#fffaf0; cursor:pointer;
     box-shadow:0 8px 0 #c9a227, 0 14px 28px rgba(0,0,0,.35); font-family:'Secular One'; font-size:min(24vh,140px); line-height:1; color:var(--c);
@@ -289,7 +294,7 @@
   <div class="overlay" id="quiz">
     <div class="bgPic" style="background-image:url(img/map.jpg)"></div>
     <div id="stars"></div>
-    <button class="ear" id="earBtn" aria-label="שמע שוב">👂</button>
+    <button class="ear" id="earBtn" aria-label="לשמוע שוב את השאלה"><span class="face"><img src="img/shaul.png" alt=""></span><span class="q">?</span></button>
     <div id="choices"></div>
   </div>
 
