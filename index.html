@@ -178,9 +178,10 @@
   .modeSwitch button{border:none; background:transparent; border-radius:999px; padding:.18em .9em; font-family:'Secular One'; font-size:min(3.8vh,21px,4.8vw);
     color:#2b2b2b; cursor:pointer; display:flex; align-items:center; gap:.45em; line-height:1.2}
   .modeSwitch button b{font-weight:400; font-size:1.3em; line-height:1; color:#4361ee}
-  .modeSwitch button[data-m=ktav] b{font-family:'Gveret Levin','Secular One'; font-size:1.65em}
+  @font-face{font-family:'Shaul Gimel'; src:url('fonts/shaul-gimel.woff?v=1') format('woff'); unicode-range:U+05D2; font-display:block}
+.modeSwitch button[data-m=ktav] b{font-family:'Shaul Gimel','Gveret Levin','Secular One'; font-size:1.65em}
   .modeSwitch button.on{background:#ffd23f; box-shadow:0 3px 0 #c9a227}
-  body.ktav .spot .peek, body.ktav #riser, body.ktav .slot, body.ktav .bigLetter, body.ktav .choice, body.ktav .wordTxt, body.ktav #celebRow{font-family:'Gveret Levin','Secular One'}
+  body.ktav .spot .peek, body.ktav #riser, body.ktav .slot, body.ktav .bigLetter, body.ktav .choice, body.ktav .wordTxt, body.ktav #celebRow{font-family:'Shaul Gimel','Gveret Levin','Secular One'}
   body.ktav .wordTxt{font-size:min(11vh,62px)}
   body.ktav .bigLetter::after{content:attr(data-print); font-family:'Secular One'; font-size:.3em; -webkit-text-stroke:3px #fff; opacity:.8; margin-inline-start:.1em; vertical-align:top}
 
@@ -330,4 +331,4 @@
     <a class="ytBtn waBtn waShare" target="_blank" rel="noopener"><i class="wa"></i>שתפו את המשחק בוואטסאפ</a>
   </div>
 </div>
-<script src="game.js?v=27"></script>
+<script src="game.js?v=28"></script>
