@@ -6,12 +6,12 @@
 'use strict';
 
 // 21/11 the user: "נראה שבכלל יש שימוש במשחק" -> anonymous usage counter (GoatCounter: no cookies, no ids, totals only).
-// It runs ONLY on the public site (github.io) and only once GC_CODE is filled in; never on localhost, files or the claude.ai copy.
+// It runs ONLY on the public site (github.io or shaulhatzav.co.il, since 24/11) and only once GC_CODE is filled in; never on localhost, files or the claude.ai copy.
 // To leave your own visits out, open the site once with ?nocount=1 (remembered on that device).
 const GC_CODE = 'shaul-alefbet';   // the site code from goatcounter.com (the part before .goatcounter.com); empty = counting is off
 const countOn = (()=>{ try{
   if (/[?&]nocount=1/.test(location.search)) localStorage.setItem('shaulNoCount','1');
-  return !!GC_CODE && /github\.io$/.test(location.hostname) && !localStorage.getItem('shaulNoCount');
+  return !!GC_CODE && /(github\.io|shaulhatzav\.co\.il)$/.test(location.hostname) && !localStorage.getItem('shaulNoCount');
 }catch(e){ return false; } })();
 if (countOn){
   window.goatcounter = { no_onload: false, allow_local: false };
@@ -497,7 +497,7 @@ $('#earBtn').addEventListener('pointerdown', ()=>{ const q=state.quiz; if(q && q
 
 /* ---------------- celebrate ---------------- */
 // 21/11 the user: WhatsApp share buttons (always share the public site, also from the artifact copy)
-const SHARE_TEXT = '🐢 משחק אלף-בית חינמי לילדים עם שאול הצב! מוצאים את כל האותיות מאָלֶף ועד תָּו 👇\nhttps://shaulhatzav-dotcom.github.io/alef-bet/';
+const SHARE_TEXT = '🐢 משחק אלף-בית חינמי לילדים עם שאול הצב! מוצאים את כל האותיות מאָלֶף ועד תָּו 👇\nhttps://shaulhatzav.co.il/alef-bet/';
 document.querySelectorAll('.waShare').forEach(a => { a.href = 'https://wa.me/?text=' + encodeURIComponent(SHARE_TEXT); });
 // 21/11 the user: a 5-second reward clip per world (Grok, muted; the game keeps its own ta-da + praise).
 // Landscape / desktop: the clip fills the screen while it plays, then shrinks into a card and the buttons appear.
